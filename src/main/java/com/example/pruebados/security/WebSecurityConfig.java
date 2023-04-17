@@ -23,13 +23,9 @@ public class WebSecurityConfig  {
     // AuthenticationManager as
     //Esto es la clase para hacerlo personalizado los filtros de Security de Spring por el protocolo http
 
-    private final UserDetailServiceImpl userDetailService;
-    private final JWTAuthorizationFilter jwtAuthorizationFilter;
     @Bean
         SecurityFilterChain filterChain(HttpSecurity httpSecurity, AuthenticationManager authenticationManager ) throws Exception {
-            JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter();
-            jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
-            jwtAuthenticationFilter.setFilterProcessesUrl("/login");
+
 
         return httpSecurity
                 .csrf().disable()
@@ -42,8 +38,6 @@ public class WebSecurityConfig  {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilter(jwtAuthenticationFilter)
-                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
    }
 
@@ -51,7 +45,7 @@ public class WebSecurityConfig  {
     AuthenticationManager authenticationManager(HttpSecurity httpSecurity,
                                             PasswordEncoder passwordEncoder) throws Exception{
     return httpSecurity.getSharedObject(AuthenticationManagerBuilder.class)
-            .userDetailsService(userDetailService)
+            .userDetailsService(UserDetailsService())
             .passwordEncoder(passwordEncoder())
             .and()
             .build();
